@@ -21,8 +21,8 @@ public class NumberOfDiscIntersections {
             final Interval[] intervals = new Interval[nbDiscs];
 
             for (int i = 0; i < nbDiscs; i++) {
-                final int left = i - discs[i];
-                final int right = i + discs[i];
+                final long left = i - discs[i];
+                final long right = i + discs[i];
                 intervals[i] = new Interval(left, right);
             }
 
@@ -30,23 +30,29 @@ public class NumberOfDiscIntersections {
 
             int totalNbIntersections = 0;
             for (int i = 0; i < nbDiscs; i++) {
-                final Interval interval = intervals[i];
-                final int targetRight = interval.right;
+                final Interval targetInterval = intervals[i];
 
-                int nbIntersections = 0;
-                int k = i + 1;
-                boolean intersecting = true;
-                while (intersecting && k < nbDiscs) {
-                    Interval sourceInterval = intervals[k];
-                    if (sourceInterval.left > targetRight) {
-                        intersecting = false;
-                    } else {
-                        k++;
-                        nbIntersections++;
+                int insertIndex = Arrays.binarySearch(intervals, targetInterval, new Comparator<Interval>() {
+                    @Override
+                    public int compare(Interval source, Interval target) {
+                        final int delta = (int) (source.left - target.right);
+                        if (delta == 0 ) {
+                            return 1;
+                        }
+                        else {
+                            return delta;
+                        }
                     }
+                });
+
+                if (insertIndex < 0) {
+                    insertIndex = -(insertIndex + 1);
                 }
 
-                totalNbIntersections += nbIntersections;
+                if ( i != insertIndex ) {
+                    int nbIntersections = insertIndex - 1 - i;
+                    totalNbIntersections += nbIntersections;
+                }
             }
 
             return totalNbIntersections;
@@ -54,10 +60,10 @@ public class NumberOfDiscIntersections {
 
         private static final class Interval {
 
-            private final int left;
-            private final int right;
+            private final long left;
+            private final long right;
 
-            private Interval(int left, int right) {
+            private Interval(long left, long right) {
                 if (left <= right) {
                     this.left = left;
                     this.right = right;
@@ -67,21 +73,26 @@ public class NumberOfDiscIntersections {
                 }
             }
 
+            @Override
+            public String toString() {
+                return "(" + left + ", " + right + ")";
+            }
         }
 
         private static final class IntervalComparator implements Comparator<Interval> {
 
             @Override
             public int compare(Interval cLeft, Interval cRight) {
-                final int deltaLeft = cLeft.left - cRight.left;
+                final int deltaLeft = (int) (cLeft.left - cRight.left);
                 if (deltaLeft == 0) {
-                    return cLeft.right - cRight.right;
+                    return (int) (cLeft.right - cRight.right);
                 } else {
                     return deltaLeft;
                 }
             }
 
         }
+
 
     }
 
