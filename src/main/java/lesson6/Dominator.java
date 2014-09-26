@@ -3,10 +3,10 @@ package lesson6;
 public class Dominator {
 
     public static void main(String[] args) {
-        Solution nesting = new Solution();
+        Solution dominator = new Solution();
 
-        int[] input = new int[]{0, 0, 1, 1, 1};
-        int solution = nesting.solution(input);
+        int[] input = new int[]{3, 4, 3, 2, 3, -1, 3, 3};
+        int solution = dominator.solution(input);
 
         System.out.println(solution);
     }
