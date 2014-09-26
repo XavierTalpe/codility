@@ -1,7 +1,7 @@
 package lesson4;
 
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.TreeSet;
 
 public class NumberOfDiscIntersections {
 
@@ -17,54 +17,67 @@ public class NumberOfDiscIntersections {
     static class Solution {
 
         public int solution(int[] discs) {
-            final TreeSet<Pair> solutions = new TreeSet<Pair>(new Comparator<Pair>() {
-                @Override
-                public int compare(Pair left, Pair right) {
-                    final int lX = left.x;
-                    final int lY = left.y;
+            final int nbDiscs = discs.length;
+            final Interval[] intervals = new Interval[nbDiscs];
 
-                    final int rX = right.x;
-                    final int rY = right.y;
+            for (int i = 0; i < nbDiscs; i++) {
+                final int left = i - discs[i];
+                final int right = i + discs[i];
+                intervals[i] = new Interval(left, right);
+            }
 
-                    final int deltaX = lX - rX;
-                    if (deltaX == 0) {
-                        return lY - rY;
+            Arrays.sort(intervals, new IntervalComparator());
+
+            int totalNbIntersections = 0;
+            for (int i = 0; i < nbDiscs; i++) {
+                final Interval interval = intervals[i];
+                final int targetRight = interval.right;
+
+                int nbIntersections = 0;
+                int k = i + 1;
+                boolean intersecting = true;
+                while (intersecting && k < nbDiscs) {
+                    Interval sourceInterval = intervals[k];
+                    if (sourceInterval.left > targetRight) {
+                        intersecting = false;
                     } else {
-                        return deltaX;
+                        k++;
+                        nbIntersections++;
                     }
                 }
-            });
 
-            final int nbDiscs = discs.length;
-            for (int i = 0; i < nbDiscs; i++) {
-                final int discRadius = discs[i];
+                totalNbIntersections += nbIntersections;
+            }
 
-                for (int k = i - discRadius; k <= i + discRadius; k++) {
-                    if (k >= 0 && k < nbDiscs && k != i) {
-                        solutions.add(new Pair(i, k));
+            return totalNbIntersections;
+        }
 
-                        if (solutions.size() > 10000000) {
-                            return -1;
-                        }
-                    }
+        private static final class Interval {
+
+            private final int left;
+            private final int right;
+
+            private Interval(int left, int right) {
+                if (left <= right) {
+                    this.left = left;
+                    this.right = right;
+                } else {
+                    this.left = right;
+                    this.right = left;
                 }
             }
 
-            return solutions.size();
         }
 
-        private static final class Pair {
+        private static final class IntervalComparator implements Comparator<Interval> {
 
-            private final int x;
-            private final int y;
-
-            private Pair(int x, int y) {
-                if (x <= y) {
-                    this.x = x;
-                    this.y = y;
+            @Override
+            public int compare(Interval cLeft, Interval cRight) {
+                final int deltaLeft = cLeft.left - cRight.left;
+                if (deltaLeft == 0) {
+                    return cLeft.right - cRight.right;
                 } else {
-                    this.x = y;
-                    this.y = x;
+                    return deltaLeft;
                 }
             }
 
