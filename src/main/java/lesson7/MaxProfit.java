@@ -15,7 +15,7 @@ public class MaxProfit {
 
         public int solution(final int[] stockPrices) {
             int localMaxProfit = 0;
-            int globalMaxProfit = -Integer.MAX_VALUE;
+            int globalMaxProfit = 0;
 
             final int N = stockPrices.length;
             for (int i = 1; i < N; i++) {
