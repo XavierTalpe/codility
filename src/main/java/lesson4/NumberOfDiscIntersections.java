@@ -3,6 +3,7 @@ package lesson4;
 import java.util.Arrays;
 import java.util.Comparator;
 
+// TODO
 public class NumberOfDiscIntersections {
 
     public static void main(String[] args) {
